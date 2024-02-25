@@ -2,7 +2,9 @@ package vips
 
 // #include "arithmetic.h"
 import "C"
-import "unsafe"
+import (
+	"unsafe"
+)
 
 // https://libvips.github.io/libvips/API/current/libvips-arithmetic.html#vips-add
 func vipsAdd(left *C.VipsImage, right *C.VipsImage) (*C.VipsImage, error) {
@@ -115,17 +117,53 @@ func vipsGetPoint(in *C.VipsImage, n int, x int, y int) ([]float64, error) {
 	return (*[4]float64)(unsafe.Pointer(out))[:n:n], nil
 }
 
-func vipsGetPoints(in *C.VipsImage, n int) ([][][]float64, error) {
-	incOpCounter("getpoints")
-	var out **C.double
-	defer gFreePointer(unsafe.Pointer(out))
+func CMatrix(rows, cols int) [][]C.double {
+	r := make([][]C.double, rows)
+	a := make([]C.double, rows*cols)
+	start, end := 0, cols
+	for i := range r {
+		r[i] = a[start:end:end]
+		start, end = end, end+cols
+	}
+	return r
+}
 
-	if err := C.getpoints(in, in.Ysize, in.Xsize, &out, C.int(n)); err != 0 {
+func CMatrixPtr(matrix [][]C.double) *C.double {
+	var p *C.double
+	if len(matrix) > 0 && len(matrix[0]) > 0 {
+		p = (*C.double)(unsafe.Pointer(&matrix[0][0]))
+	}
+	return p
+}
+
+func vipsGetPoints(in *C.VipsImage, n int) ([][]float64, error) {
+	incOpCounter("getpoints")
+	matrix := CMatrix(int(in.Ysize), int(in.Xsize))
+	matrixCPtr := CMatrixPtr(matrix)
+	defer gFreePointer(unsafe.Pointer(matrixCPtr))
+
+	if err := C.getpoints(in, in.Ysize, in.Xsize, &matrixCPtr, C.int(n)); err != 0 {
 		return nil, handleVipsError()
 	}
 
 	// maximum n is 4
-	return *(*[][][]float64)(unsafe.Pointer(out)), nil
+	data := make([][]float64, in.Ysize+in.Xsize)
+	for i := 0; i < len(data); i++ {
+		// Create a slice to store the 3 values
+		group := make([]float64, 3)
+
+		// Assign the values from the C matrix
+		for j := 0; j < 3; j++ {
+			index := i*3 + j // Calculate the index in the C matrix
+			matrixCPtr := (*byte)(unsafe.Pointer(uintptr(unsafe.Pointer(CMatrixPtr(matrix))) + uintptr(index)))
+			// Convert the byte to float64 and assign to the group slice
+			group[j] = float64(*matrixCPtr)
+		}
+
+		// Append the group to the data slice
+		data[i] = group
+	}
+	return data, nil
 }
 
 // https://www.libvips.org/API/current/libvips-arithmetic.html#vips-stats
