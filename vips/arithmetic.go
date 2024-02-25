@@ -115,6 +115,19 @@ func vipsGetPoint(in *C.VipsImage, n int, x int, y int) ([]float64, error) {
 	return (*[4]float64)(unsafe.Pointer(out))[:n:n], nil
 }
 
+func vipsGetPoints(in *C.VipsImage, n int) ([][]float64, error) {
+	incOpCounter("getpoints")
+	var out **C.double
+	defer gFreePointer(unsafe.Pointer(out))
+
+	if err := C.getpoints(in, &out, C.int(n)); err != 0 {
+		return nil, handleVipsError()
+	}
+
+	// maximum n is 4
+	return *(*[][]float64)(unsafe.Pointer(out)), nil
+}
+
 // https://www.libvips.org/API/current/libvips-arithmetic.html#vips-stats
 func vipsStats(in *C.VipsImage) (*C.VipsImage, error) {
 	incOpCounter("stats")

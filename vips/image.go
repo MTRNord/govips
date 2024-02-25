@@ -1660,6 +1660,17 @@ func (r *ImageRef) GetPoint(x int, y int) ([]float64, error) {
 	return vipsGetPoint(r.image, n, x, y)
 }
 
+// GetPoints reads all pixelx on an image.
+// The pixel values are returned in a slice of length width*height with n elements each.
+// The pixels start top left to bottom right
+func (r *ImageRef) GetPoints() ([][]float64, error) {
+	n := 3
+	if vipsHasAlpha(r.image) {
+		n = 4
+	}
+	return vipsGetPoints(r.image, n)
+}
+
 // Stats find many image statistics in a single pass through the data. Image is changed into a one-band
 // `BandFormatDouble` image of at least 10 columns by n + 1 (where n is number of bands in image in)
 // rows. Columns are statistics, and are, in order: minimum, maximum, sum, sum of squares, mean,
