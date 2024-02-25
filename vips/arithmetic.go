@@ -140,7 +140,6 @@ func vipsGetPoints(in *C.VipsImage, n int) ([][]float64, error) {
 	incOpCounter("getpoints")
 	matrix := CMatrix(int(in.Ysize), int(in.Xsize))
 	matrixCPtr := CMatrixPtr(matrix)
-	defer gFreePointer(unsafe.Pointer(matrixCPtr))
 
 	if err := C.getpoints(in, in.Ysize, in.Xsize, &matrixCPtr, C.int(n)); err != 0 {
 		return nil, handleVipsError()
