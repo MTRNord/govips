@@ -50,10 +50,10 @@ int getpoint(VipsImage *in, double **vector, int n, int x, int y) {
   return vips_getpoint(in, vector, &n, x, y, NULL);
 }
 
-int getpoints(VipsImage *in, int height, int width, double ***vector, int n) {
+int getpoints(VipsImage *in, int height, int width, double ****vector, int n) {
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
-      double *pointer = vector[i][j];
+      double *pointer = (*vector)[i][j];
       if (getpoint(in, &pointer, n, i, j) != 0) {
         return 1;
       }

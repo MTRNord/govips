@@ -117,7 +117,7 @@ func vipsGetPoint(in *C.VipsImage, n int, x int, y int) ([]float64, error) {
 
 func vipsGetPoints(in *C.VipsImage, n int) ([][][]float64, error) {
 	incOpCounter("getpoints")
-	var out **C.double
+	var out ***C.double
 	defer gFreePointer(unsafe.Pointer(out))
 
 	if err := C.getpoints(in, in.Ysize, in.Xsize, &out, C.int(n)); err != 0 {
