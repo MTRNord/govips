@@ -53,7 +53,7 @@ int getpoint(VipsImage *in, double **vector, int n, int x, int y) {
 int getpoints(VipsImage *in, int height, int width, double ***vector, int n) {
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
-      if (getpoint(in, &vector[i][j], n, i, j) != 0) {
+      if (getpoint(in, &((*vector)[i][j]), n, i, j) != 0) {
         return 1;
       }
     }
