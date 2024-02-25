@@ -56,7 +56,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/davidbyttow/govips/v2/vips"
+ "github.com/daviMTRNorddbyttow/govips/v2/vips"
 )
 
 func checkError(err error) {

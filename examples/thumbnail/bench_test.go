@@ -2,7 +2,7 @@ package thumbnail
 
 import (
 	"fmt"
-	"github.com/davidbyttow/govips/v2/vips"
+	"github.com/MTRNord/govips/v2/vips"
 	"io/ioutil"
 	"testing"
 )
