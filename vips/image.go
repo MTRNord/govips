@@ -1663,7 +1663,7 @@ func (r *ImageRef) GetPoint(x int, y int) ([]float64, error) {
 // GetPoints reads all pixelx on an image.
 // The pixel values are returned in a slice of length width*height with n elements each.
 // The pixels start top left to bottom right
-func (r *ImageRef) GetPoints() ([][]float64, error) {
+func (r *ImageRef) GetPoints() ([][][]float64, error) {
 	n := 3
 	if vipsHasAlpha(r.image) {
 		n = 4
