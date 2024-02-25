@@ -1,4 +1,4 @@
-module github.com/MTRNord/govips
+module github.com/davidbyttow/govips/v2
 
 go 1.15
 
